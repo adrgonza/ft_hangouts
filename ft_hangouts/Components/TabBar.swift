@@ -1,24 +1,31 @@
-//
-//  TabBar.swift
-//  ft_hangouts
-//
-//  Created by Adrian Gonzalez Serrano on 17.02.2025.
-//
-
 import SwiftUI
 
 struct TabBar: View {
+    @State private var selectedTab = 1
+    init() { UITabBar.appearance().backgroundColor = UIColor.systemGray6 }
+
     var body: some View {
-        TabView(selection: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Selection@*/.constant(1)/*@END_MENU_TOKEN@*/) {
+        TabView(selection: $selectedTab) {
             CallsView()
-                .tabItem { Text("Calls") }
-                .tag(2)
+                .tabItem {
+                    Image(systemName: "phone.fill")
+                    Text("Calls")
+                }
+                .tag(0)
+
             ChatView()
-                .tabItem { Text("Chats") }
+                .tabItem {
+                    Image(systemName: "bubble.left.and.bubble.right.fill")
+                    Text("Chats")
+                }
                 .tag(1)
+
             SettingsView()
-                .tabItem { Text("Settigns") }
-                .tag(3)
+                .tabItem {
+                    Image(systemName: "gearshape.fill")
+                    Text("Settings")
+                }
+                .tag(2)
         }
     }
 }
