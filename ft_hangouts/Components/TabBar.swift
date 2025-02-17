@@ -12,10 +12,10 @@ struct TabBar: View {
         TabView(selection: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Selection@*/.constant(1)/*@END_MENU_TOKEN@*/) {
             CallsView()
                 .tabItem { Text("Calls") }
-                .tag(1)
+                .tag(2)
             ChatView()
                 .tabItem { Text("Chats") }
-                .tag(2)
+                .tag(1)
             SettingsView()
                 .tabItem { Text("Settigns") }
                 .tag(3)

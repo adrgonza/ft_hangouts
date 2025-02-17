@@ -1,51 +1,65 @@
 import SwiftUI
 
-struct ChatData: Identifiable {
+struct Contact: Identifiable {
     let id = UUID()
     let name: String
+    let phone: String
     let profileImage: String
     let lastMessage: String
     let time: String
-    let unreadMessages: Int
+    //let Chats
 }
 
 struct CreateContactView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var profileImage: String = ""
     @State private var name: String = ""
     @State private var phone: String = ""
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("Contact Info")) {
-                    TextField("Name", text: $name)
-                    TextField("Phone", text: $phone)
+            VStack {
+                Text("Create Contact")
+                    .font(.title)
+                    .fontWeight(.bold)
+                Button(action: {
+                    
+                }) {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .frame(width: 100, height: 100)
                 }
-            }
-            .navigationTitle("Create Contact")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
+                .padding()
+                Text("Add Profile Image")
+                Form {
+                    Section(header: Text("Contact Info")) {
+                        TextField("Name", text: $name)
+                        TextField("Phone", text: $phone)
                     }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        dismiss()
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            dismiss()
+                        }
                     }
                 }
             }
+            .padding(20)
         }
     }
 }
-
 
 struct ChatRow: View {
     let name: String
     let profileImage: String
     let lastMessage: String
     let time: String
-    let unreadMessages: Int
     
     var body: some View {
         HStack () {
@@ -58,15 +72,22 @@ struct ChatRow: View {
                     .foregroundColor(.gray)
             }
             Spacer()
-            VStack() {
-                Text(time)
-                if unreadMessages > 0 {
-                    Text(String(unreadMessages))
-                }
-                else {
-                    Spacer()
-                }
-            }
+            Text(time)
+        }
+    }
+}
+
+struct ContactRow: View {
+    let name: String
+    let profileImage: String
+
+    var body: some View {
+        HStack () {
+            Image(systemName: profileImage)
+                .resizable()
+                .frame(width: 44, height: 44)
+            Text(name)
+            Spacer()
         }
     }
 }
@@ -74,11 +95,16 @@ struct ChatRow: View {
 struct ChatView: View {
     @State private var showingCreateContact = false
     
-    var chats: [ChatData] = [
-        ChatData(name: "Pedro Picapiedra", profileImage: "person.crop.circle.fill", lastMessage: "Hola, ¿cómo estás?", time: "12:30", unreadMessages: 2),
-        ChatData(name: "Juan Pérez", profileImage: "person.crop.circle.fill", lastMessage: "Nos vemos mañana", time: "11:00", unreadMessages: 0),
-        ChatData(name: "Ana García", profileImage: "person.crop.circle.fill", lastMessage: "¡Genial!", time: "Ayer", unreadMessages: 5)
+    var contacts: [Contact] = [
+        Contact(name: "Pedro Picapiedra", phone: "42432", profileImage: "person.crop.circle.fill", lastMessage: "Hola, ¿cómo estás?", time: "12:30"),
+        Contact(name: "Juan Pérez", phone: "42432", profileImage: "person.crop.circle.fill", lastMessage: "", time: ""),
+        Contact(name: "Ana García", phone: "42432", profileImage: "person.crop.circle.fill", lastMessage: "¡Genial!", time: "Ayer")
     ]
+    
+    var contactsWithMessages: [Contact] {
+            contacts.filter { !$0.lastMessage.isEmpty || !$0.time.isEmpty }
+        }
+
     var body: some View {
         VStack {
             HStack() {
@@ -100,14 +126,24 @@ struct ChatView: View {
                 .font(.title)
                 .fontWeight(.bold)
             
-            List(chats, id: \.name) { chat in
-                ChatRow(
-                    name: chat.name,
-                    profileImage: chat.profileImage,
-                    lastMessage: chat.lastMessage,
-                    time: chat.time,
-                    unreadMessages: chat.unreadMessages
-                )
+            List {
+                Section(header: Text("chats")) {
+                    ForEach(contactsWithMessages, id: \.id) { chat in
+                        ChatRow(
+                            name: chat.name,
+                            profileImage: chat.profileImage,
+                            lastMessage: chat.lastMessage,
+                            time: chat.time
+                        )
+                    }
+                }
+                Section(header: Text("Contacts")) {
+                    ForEach(contacts, id: \.id) { contact in
+                        ContactRow(
+                            name: contact.name,
+                            profileImage: contact.profileImage)
+                    }
+                }
             }
         }
         .sheet(isPresented: $showingCreateContact) {
